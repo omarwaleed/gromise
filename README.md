@@ -11,12 +11,12 @@ In some cases, it might prove to be easier on the eye to write code using this l
 
 ## Roadmap
 
-- [ ] new
-- [ ] resolve/reject
-- [ ] all
+- [x] new
+- [x] resolve/reject
+- [x] all
 - [ ] allSettled
 - [ ] any
-- [ ] race
+- [x] race
 - [ ] then
 - [ ] catch
 - [ ] finally
