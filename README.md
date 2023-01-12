@@ -17,6 +17,3 @@ In some cases, it might prove to be easier on the eye to write code using this l
 - [x] allSettled
 - [x] any
 - [x] race
-- [ ] then
-- [ ] catch
-- [ ] finally
