@@ -14,8 +14,8 @@ In some cases, it might prove to be easier on the eye to write code using this l
 - [x] new
 - [x] resolve/reject
 - [x] all
-- [ ] allSettled
-- [ ] any
+- [x] allSettled
+- [x] any
 - [x] race
 - [ ] then
 - [ ] catch
