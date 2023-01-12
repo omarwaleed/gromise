@@ -152,12 +152,12 @@ func TestPromiseAnyAllResolved(t *testing.T) {
 		return "world"
 	})
 	promises := []*Promise{p1, p2}
-	result, err := Race(promises)
+	result, err := Any(promises)
 	if err != nil {
 		t.Fatal("Promise should not have an error")
 	}
 	if result != "world" {
-		t.Fatal("Promise result should be world")
+		t.Fatalf("Promise result should be world. Got %v", result)
 	}
 }
 
