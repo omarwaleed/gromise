@@ -4,17 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 )
 
 type Promise struct {
 	Fn     (func(...any) any)
 	Result *any
 	Error  error
-}
-
-type promiseArrayWithMutex struct {
-	promises []*Promise
-	mu       sync.Mutex
 }
 
 // Creates a new promise. Returns a value if resolved or rejects if function panics. Does NOT run the promise.
@@ -25,7 +21,7 @@ func New(fn func(...any) any) *Promise {
 	return p
 }
 
-// Runs the promise given
+// Runs the promise given. If the promise panics, it will be rejected. If the promise is rejected, the error will be set on the promise.
 func (p *Promise) Run(wg *sync.WaitGroup) {
 	go func() {
 		defer func() {
@@ -80,38 +76,45 @@ func AllSettled(promises []*Promise) []any {
 
 // Given a list of promises, runs them all and returns the first non rejected result. Rejects if all promises reject.
 func Any(promises []*Promise) (any, error) {
-	wg := sync.WaitGroup{}
-	wg.Add(len(promises))
 	for _, promise := range promises {
-		promise.Run(&wg)
+		promise.Run(nil)
 	}
-	wg.Wait()
-	for _, promise := range promises {
-		if promise.Error == nil {
-			return promise.Result, nil
+	ticker := time.NewTicker(time.Millisecond * 5)
+	defer ticker.Stop()
+	for {
+		<-ticker.C
+		allReject := true
+		for _, promise := range promises {
+			if promise.Result != nil {
+				return *promise.Result, nil
+			}
+			if promise.Error == nil {
+				allReject = false
+			}
+		}
+		if allReject {
+			break
 		}
 	}
 	return nil, errors.New("All promises rejected")
 }
 
-// Given a list of promises, runs them all and returns the first non rejected result. Rejects if all promises reject.
+// Given a list of promises, runs them all and returns the first non rejected result. Rejects if any promise rejects.
 func Race(promises []*Promise) (any, error) {
-	wg := sync.WaitGroup{}
-	wg.Add(len(promises))
-	pa := promiseArrayWithMutex{
-		mu:       sync.Mutex{},
-		promises: promises,
-	}
 	for _, promise := range promises {
-		promise.Run(&wg)
+		promise.Run(nil)
 	}
-	wg.Wait()
-	pa.mu.Lock()
-	defer pa.mu.Unlock()
-	for _, promise := range pa.promises {
-		if promise.Error == nil {
-			return promise.Result, nil
+	ticker := time.NewTicker(time.Millisecond * 5)
+	defer ticker.Stop()
+	for {
+		<-ticker.C
+		for _, promise := range promises {
+			if promise.Result != nil {
+				return *promise.Result, nil
+			}
+			if promise.Error != nil {
+				return nil, promise.Error
+			}
 		}
 	}
-	return nil, errors.New("All promises rejected")
 }
