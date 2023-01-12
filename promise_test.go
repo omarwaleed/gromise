@@ -98,16 +98,16 @@ func TestPromiseAllSettled(t *testing.T) {
 	promises := []*Promise{p1, p2, p3}
 	results := AllSettled(promises)
 	if len(results) != 3 {
-		t.Fatal("Promise should have 3 results")
+		t.Fatalf("Promise should have 3 results. Got %d", len(results))
 	}
-	if results[0] != "fullfilled" {
-		t.Fatal("Promise result should be fullfilled")
+	if results[0] != "fulfilled" {
+		t.Fatalf("Promise result should be fulfilled. Got %v", results[0])
 	}
-	if results[1] == "rejected" {
-		t.Fatal("Promise result should be rejected")
+	if results[1] != "rejected" {
+		t.Fatalf("Promise result should be rejected. Got %v", results[1])
 	}
-	if results[2] != "fullfilled" {
-		t.Fatal("Promise result of nil should be fullfilled")
+	if results[2] != "fulfilled" {
+		t.Fatalf("Promise result of nil should be fulfilled. Got %v", results[2])
 	}
 }
 
@@ -124,7 +124,7 @@ func TestPromiseAny(t *testing.T) {
 		t.Fatal("Promise should not have an error")
 	}
 	if result != "world" {
-		t.Fatal("Promise result should be world")
+		t.Fatalf("Promise result should be world. Got %v", result)
 	}
 }
 
