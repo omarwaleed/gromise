@@ -68,11 +68,11 @@ func AllSettled(promises []*Promise) []any {
 		promise.Run(&wg)
 	}
 	wg.Wait()
-	for _, promise := range promises {
+	for index, promise := range promises {
 		if promise.Error != nil {
-			results = append(results, "rejected")
+			results[index] = "rejected"
 		} else {
-			results = append(results, "fulfilled")
+			results[index] = "fulfilled"
 		}
 	}
 	return results
