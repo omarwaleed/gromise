@@ -99,7 +99,7 @@ func Any(promises []*Promise) (any, error) {
 	return nil, errors.New("All promises rejected")
 }
 
-// Given a list of promises, runs them all and returns the first non rejected result. Rejects if any promise rejects.
+// Given a list of promises, runs them all and returns the first non rejected result. Rejects if any promise rejects first.
 func Race(promises []*Promise) (any, error) {
 	for _, promise := range promises {
 		promise.Run(nil)
