@@ -2,6 +2,7 @@ package gromise
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -29,7 +30,7 @@ func (p *Promise) Run(wg *sync.WaitGroup) {
 	go func() {
 		defer func() {
 			if err := recover(); err != nil {
-				p.Error = err.(error)
+				p.Error = fmt.Errorf("Promise rejected: %v", err)
 			}
 			if wg != nil {
 				wg.Done()
@@ -96,7 +97,7 @@ func Any(promises []*Promise) (any, error) {
 // Given a list of promises, runs them all and returns the first non rejected result. Rejects if all promises reject.
 func Race(promises []*Promise) (any, error) {
 	wg := sync.WaitGroup{}
-	wg.Add(1)
+	wg.Add(len(promises))
 	pa := promiseArrayWithMutex{
 		mu:       sync.Mutex{},
 		promises: promises,
